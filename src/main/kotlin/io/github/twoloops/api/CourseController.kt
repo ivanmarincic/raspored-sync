@@ -1,6 +1,7 @@
 package io.github.twoloops.api
 
 import io.github.twoloops.helpers.NotExpiredException
+import io.github.twoloops.models.dto.CourseDto
 import io.github.twoloops.models.dto.CourseFilterDto
 import io.github.twoloops.services.CourseService
 import io.javalin.Javalin
@@ -20,6 +21,13 @@ object CourseController {
                 ApiBuilder.post("/getLatest") {
                     try {
                         it.json(courseService.getLatest(it.bodyAsClass(CourseFilterDto::class.java)))
+                    } catch (e: NotExpiredException) {
+                        it.status(204)
+                    }
+                }
+                ApiBuilder.post("/save") {
+                    try {
+                        it.json(courseService.save(it.bodyAsClass(CourseDto::class.java)))
                     } catch (e: NotExpiredException) {
                         it.status(204)
                     }

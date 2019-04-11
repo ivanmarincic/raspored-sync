@@ -8,15 +8,16 @@ import com.j256.ormlite.support.ConnectionSource
 import com.j256.ormlite.table.TableUtils
 import io.github.twoloops.api.AppointmentController
 import io.github.twoloops.api.CourseController
+import io.github.twoloops.api.SettingsController
 import io.github.twoloops.dao.CourseDaoImpl
 import io.github.twoloops.dao.CourseTypeDaoImpl
 import io.github.twoloops.dao.SettingsDaoImpl
 import io.github.twoloops.helpers.Utils
+import io.github.twoloops.models.db.Appointment
+import io.github.twoloops.models.db.Course
+import io.github.twoloops.models.db.CourseType
+import io.github.twoloops.models.db.Settings
 import io.github.twoloops.models.dto.SettingsDto
-import io.github.twoloops.models.jpa.Appointment
-import io.github.twoloops.models.jpa.Course
-import io.github.twoloops.models.jpa.CourseType
-import io.github.twoloops.models.jpa.Settings
 import io.github.twoloops.tasks.PeriodicSyncTask
 import io.javalin.Javalin
 import io.javalin.json.JavalinJackson
@@ -42,6 +43,7 @@ fun main(args: Array<String>) {
                     .registerModule(KotlinModule()))
     CourseController.initializeController(app)
     AppointmentController.initializeController(app)
+    SettingsController.initializeController(app)
     PeriodicSyncTask.start()
     Application.logger.info("Server has started and is ready to go")
 }

@@ -2,7 +2,7 @@ package io.github.twoloops.dao
 
 import com.j256.ormlite.dao.BaseDaoImpl
 import com.j256.ormlite.support.ConnectionSource
-import io.github.twoloops.models.jpa.CourseType
+import io.github.twoloops.models.db.CourseType
 
 class CourseTypeDaoImpl(connectionSource: ConnectionSource) : BaseDaoImpl<CourseType, Int>(connectionSource, CourseType::class.java), CourseTypeDao {
 

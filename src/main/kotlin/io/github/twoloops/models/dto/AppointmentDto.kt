@@ -1,6 +1,6 @@
 package io.github.twoloops.models.dto
 
-import io.github.twoloops.models.jpa.Appointment
+import io.github.twoloops.models.db.Appointment
 import org.joda.time.DateTime
 
 data class AppointmentDto(

@@ -1,6 +1,6 @@
 package io.github.twoloops.models.dto
 
-import io.github.twoloops.models.jpa.CourseType
+import io.github.twoloops.models.db.CourseType
 
 data class CourseTypeDto(
         var id: Int? = null,

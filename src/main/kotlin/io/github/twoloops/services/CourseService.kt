@@ -27,4 +27,8 @@ class CourseService {
             throw NotExpiredException()
         }
     }
+
+    fun save(course: CourseDto): CourseDto {
+        return CourseDto(courseDao.create(course.toPojo()))
+    }
 }

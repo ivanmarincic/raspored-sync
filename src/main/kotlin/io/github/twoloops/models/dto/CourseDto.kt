@@ -1,6 +1,6 @@
 package io.github.twoloops.models.dto
 
-import io.github.twoloops.models.jpa.Course
+import io.github.twoloops.models.db.Course
 import org.joda.time.DateTime
 
 data class CourseDto(

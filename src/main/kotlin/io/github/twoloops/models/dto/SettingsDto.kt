@@ -1,6 +1,6 @@
 package io.github.twoloops.models.dto
 
-import io.github.twoloops.models.jpa.Settings
+import io.github.twoloops.models.db.Settings
 import org.joda.time.DateTime
 
 data class SettingsDto(
@@ -10,7 +10,7 @@ data class SettingsDto(
 
     constructor(that: Settings) : this(that.id, that.lastSyncCourses)
 
-    fun toPojo(): SettingsDto {
-        return SettingsDto(id, lastSyncCourses)
+    fun toPojo(): Settings {
+        return Settings(id, lastSyncCourses)
     }
 }

@@ -17,7 +17,7 @@ object HTMLParserService {
     fun parseRaspored(course: CourseDto, start: DateTime): ArrayList<AppointmentDto>? {
         val response = Jsoup
                 .connect(course.url)
-                .timeout(30000)
+                .timeout(50000)
                 .data(hashMapOf(
                         "StartDatee1" to start.toString("dd.MM.yyyy")
                 ))

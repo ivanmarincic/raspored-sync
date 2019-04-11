@@ -1,4 +1,4 @@
-package io.github.twoloops.models.jpa
+package io.github.twoloops.models.db
 
 import com.j256.ormlite.field.DataType
 import com.j256.ormlite.field.DatabaseField

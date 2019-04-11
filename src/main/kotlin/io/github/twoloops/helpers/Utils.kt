@@ -11,8 +11,11 @@ class Utils {
         val databaseFile = File("${System.getProperty("user.home")}/raspored-sync-db/raspored-sync.db")
         val appointmentURL = "http://intranet.fsr.sum.ba:81/intranetfsr/teamworks.dll/internal/calendar.appointmentinfo?OQS=%s&guid=%s&tablename=appointment&hideusers=no"
 
+        const val syncTaskFailingTreshold = 5
         const val syncTaskExecutionTimeMinutes = 30L
         const val failedSyncTaskExecutionTimeMinutes = 5L
+
+        const val uniqueUpdateKey = ""
 
         const val courseTypeStrojarstvo = "Strojarstvo"
         const val courseTypeRacunarstvo = "Računarstvo"
