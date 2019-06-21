@@ -9,12 +9,13 @@ data class CourseDto(
         var url: String = "",
         var type: CourseTypeDto = CourseTypeDto(),
         var year: Int = -1,
-        var lastSync: DateTime = DateTime()
+        var lastSync: DateTime = DateTime(),
+        var lastFailed: DateTime? = null
 ) {
 
-    constructor(that: Course) : this(that.id, that.name, that.url, CourseTypeDto(that.type), that.year, that.lastSync)
+    constructor(that: Course) : this(that.id, that.name, that.url, CourseTypeDto(that.type), that.year, that.lastSync, that.lastFailed)
 
     fun toPojo(): Course {
-        return Course(id, name, url, type.toPojo(), year, lastSync)
+        return Course(id, name, url, type.toPojo(), year, lastSync, lastFailed)
     }
 }

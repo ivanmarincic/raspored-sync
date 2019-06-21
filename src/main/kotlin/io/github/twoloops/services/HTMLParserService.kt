@@ -17,7 +17,6 @@ object HTMLParserService {
     fun parseRaspored(course: CourseDto, start: DateTime): ArrayList<AppointmentDto>? {
         val response = Jsoup
                 .connect(course.url)
-                .timeout(50000)
                 .data(hashMapOf(
                         "StartDatee1" to start.toString("dd.MM.yyyy")
                 ))
@@ -104,8 +103,8 @@ object HTMLParserService {
                 2 -> {
                     val text = element.text()
                     val dates = text.split(" - ")
-                    appointment.start = DateTime.parse(dates[0].trim(), DateTimeFormat.forPattern("dd.MM.yyyy HH:mm")).withZone(DateTimeZone.UTC)
-                    appointment.end = DateTime.parse(dates[1].trim(), DateTimeFormat.forPattern("dd.MM.yyyy HH:mm")).withZone(DateTimeZone.UTC)
+                    appointment.start = DateTime.parse(dates[0].trim(), DateTimeFormat.forPattern("dd.MM.yyyy HH:mm")).withZone(DateTimeZone.getDefault())
+                    appointment.end = DateTime.parse(dates[1].trim(), DateTimeFormat.forPattern("dd.MM.yyyy HH:mm")).withZone(DateTimeZone.getDefault())
                 }
             }
         }

@@ -1,13 +1,15 @@
 package io.github.twoloops.services
 
 import io.github.twoloops.Application
+import io.github.twoloops.api.exceptions.NotExpiredException
 import io.github.twoloops.dao.AppointmentDaoImpl
 import io.github.twoloops.dao.CourseDaoImpl
-import io.github.twoloops.helpers.NotExpiredException
 import io.github.twoloops.models.dto.AppointmentDto
 import io.github.twoloops.models.dto.AppointmentFilterDto
+import io.github.twoloops.models.dto.AppointmentSyncDto
 import org.joda.time.DateTime
 import org.joda.time.DateTimeConstants
+import org.joda.time.DateTimeZone
 
 class AppointmentService {
 
@@ -22,12 +24,15 @@ class AppointmentService {
         return appointmentDao.getNamesByCourseId(courseId)
     }
 
-    fun getLatest(appointmentFilterDto: AppointmentFilterDto): List<AppointmentDto> {
+    fun getLatest(appointmentFilterDto: AppointmentFilterDto): AppointmentSyncDto {
         val course = courseDao.queryForId(appointmentFilterDto.courseId)
-        if (appointmentFilterDto.lastSync == null || course.lastSync > appointmentFilterDto.lastSync) {
+        val outOfSync = course.lastFailed != null && DateTime.now().withZone(DateTimeZone.UTC) > course.lastFailed!!.withZone(DateTimeZone.UTC).plusHours(4)
+        if (appointmentFilterDto.lastSync == null || outOfSync || course.lastSync.withZone(DateTimeZone.UTC) > appointmentFilterDto.lastSync!!.withZone(DateTimeZone.UTC)) {
             val start = DateTime().withDayOfWeek(DateTimeConstants.MONDAY).withTimeAtStartOfDay()
             val end = start.plusDays(DateTimeConstants.DAYS_PER_WEEK * 2)
-            return appointmentDao.getLatestByCourseId(appointmentFilterDto.courseId, appointmentFilterDto.partialCourseId, appointmentFilterDto.partialStrings, appointmentFilterDto.blockedStrings, start, end).map { AppointmentDto(it) }
+            return AppointmentSyncDto(
+                    appointmentDao.getLatestByCourseId(appointmentFilterDto.courseId, appointmentFilterDto.partialCourseId, appointmentFilterDto.partialStrings, appointmentFilterDto.blockedStrings, start, end).map { AppointmentDto(it) },
+                    outOfSync)
         } else {
             throw NotExpiredException()
         }

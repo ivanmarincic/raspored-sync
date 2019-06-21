@@ -9,6 +9,7 @@ import io.github.twoloops.models.dto.CourseDto
 import io.github.twoloops.services.HTMLParserService
 import org.joda.time.DateTime
 import org.joda.time.DateTimeConstants
+import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
@@ -24,21 +25,31 @@ object PeriodicSyncTask {
         try {
             Application.logger.info("Syncing courses")
             val courses = coursesDao.queryForAll().map { CourseDto(it) }
+            val executor = Executors.newFixedThreadPool(5)
+            val countDownLatch = CountDownLatch(courses.count())
             courses.forEach { course ->
-                var failed = 0
-                var exception: Exception? = null
-                while (failed < Utils.syncTaskFailingTreshold) {
-                    try {
-                        processCourse(course)
-                    } catch (e: Exception) {
-                        failed++
-                        exception = e
+                executor.submit {
+                    var failed = 0
+                    var exception: Exception? = null
+                    while (failed < Utils.syncTaskFailingTreshold) {
+                        try {
+                            processCourse(course)
+                        } catch (e: Exception) {
+                            failed++
+                            exception = e
+                        }
                     }
-                }
-                if (failed >= Utils.syncTaskFailingTreshold) {
-                    Application.logger.error("Course " + course.name + " failed", exception)
+                    if (failed >= Utils.syncTaskFailingTreshold) {
+                        if (course.lastFailed == null) {
+                            course.lastFailed = DateTime.now()
+                        }
+                        coursesDao.update(course.toPojo())
+                        Application.logger.error("Course " + course.name + " failed", exception)
+                    }
+                    countDownLatch.countDown()
                 }
             }
+            countDownLatch.await()
         } catch (e: Exception) {
             e.printStackTrace()
         } finally {
@@ -55,21 +66,23 @@ object PeriodicSyncTask {
         val weekEnd = weekStart.plusDays(DateTimeConstants.DAYS_PER_WEEK)
         val lastAppointments = appointmentDao.getAllByDatesAndCourse(weekStart, weekEnd, course.toPojo()).asSequence().map { AppointmentDto(it) }.toMutableList()
         val syncedAppointments = HTMLParserService.parseRaspored(course, weekStart)
+        val newAppointments = arrayListOf<AppointmentDto>()
         if (syncedAppointments != null) {
-            for (i in (syncedAppointments.count() - 1)..0) {
-                val appointment = syncedAppointments[i]
+            for (appointment in syncedAppointments) {
                 val lastAppointmentIndex = lastAppointments.indexOf(appointment)
                 if (lastAppointmentIndex != -1) {
                     lastAppointments.removeAt(lastAppointmentIndex)
-                    syncedAppointments.removeAt(i)
+                } else {
+                    newAppointments.add(appointment)
                 }
             }
             appointmentDao.deleteIds(lastAppointments.map {
                 it.id
             })
-            appointmentDao.create(syncedAppointments.map { it.toPojo() })
-            if (syncedAppointments.count() > 0) {
+            appointmentDao.create(newAppointments.map { it.toPojo() })
+            if (newAppointments.count() > 0 || lastAppointments.count() > 0) {
                 course.lastSync = DateTime.now()
+                course.lastFailed = null
                 coursesDao.update(course.toPojo())
             }
         }

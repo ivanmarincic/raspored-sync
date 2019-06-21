@@ -18,7 +18,9 @@ data class Course(
         @DatabaseField(columnName = "year")
         var year: Int = -1,
         @DatabaseField(columnName = "last_sync", dataType = DataType.DATE_TIME)
-        var lastSync: DateTime = DateTime()
+        var lastSync: DateTime = DateTime(),
+        @DatabaseField(columnName = "last_failed", dataType = DataType.DATE_TIME, canBeNull = true)
+        var lastFailed: DateTime? = null
 ) {
     companion object {
         const val tableName = "courses"

@@ -2,7 +2,7 @@ package io.github.twoloops.services
 
 import io.github.twoloops.Application
 import io.github.twoloops.dao.CourseDaoImpl
-import io.github.twoloops.helpers.NotExpiredException
+import io.github.twoloops.api.exceptions.NotExpiredException
 import io.github.twoloops.helpers.Utils
 import io.github.twoloops.models.dto.CourseDto
 import io.github.twoloops.models.dto.CourseFilterDto

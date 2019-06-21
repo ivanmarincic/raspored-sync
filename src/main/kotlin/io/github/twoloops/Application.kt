@@ -3,6 +3,7 @@ package io.github.twoloops
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.joda.JodaModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.j256.ormlite.db.MariaDbDatabaseType
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource
 import com.j256.ormlite.support.ConnectionSource
 import com.j256.ormlite.table.TableUtils
@@ -26,12 +27,12 @@ import org.slf4j.LoggerFactory
 class Application {
 
     companion object {
-        val databaseConnection: ConnectionSource = JdbcPooledConnectionSource("jdbc:sqlite:${Utils.databaseFile.absoluteFile}")
+        val databaseConnection: ConnectionSource = JdbcPooledConnectionSource(Utils.connectionString, MariaDbDatabaseType())
         val logger = LoggerFactory.getLogger(Application::class.java)!!
     }
 }
 
-fun main(args: Array<String>) {
+fun main() {
     initializeDatabase()
     val app = Javalin
             .create()
@@ -49,15 +50,6 @@ fun main(args: Array<String>) {
 }
 
 fun initializeDatabase() {
-    try {
-        if (!Utils.databaseFile.exists()) {
-            Utils.databaseFile.parentFile.mkdirs()
-            Utils.databaseFile.createNewFile()
-            Application.logger.info("Database file created at ${Utils.databaseFile.absoluteFile}")
-        }
-    } catch (e: Exception) {
-        Application.logger.error("Database initialization failed", e)
-    }
     TableUtils.createTableIfNotExists(Application.databaseConnection, Course::class.java)
     TableUtils.createTableIfNotExists(Application.databaseConnection, CourseType::class.java)
     TableUtils.createTableIfNotExists(Application.databaseConnection, Appointment::class.java)

@@ -1,6 +1,7 @@
 package io.github.twoloops.api
 
-import io.github.twoloops.helpers.NotExpiredException
+import io.github.twoloops.api.exceptions.NotExpiredException
+import io.github.twoloops.models.dto.AppointmentDto
 import io.github.twoloops.models.dto.AppointmentFilterDto
 import io.github.twoloops.services.AppointmentService
 import io.javalin.Javalin
@@ -23,17 +24,25 @@ object AppointmentController {
 
                 ApiBuilder.post("/getLatest") {
                     try {
-                        it.json(appointmentService.getLatest(it.bodyAsClass(AppointmentFilterDto::class.java)))
+                        val data = appointmentService.getLatest(it.bodyAsClass(AppointmentFilterDto::class.java))
+                        if (data.outOfSync) {
+                            it.status(211)
+                        }
+                        it.json(data.appointments)
                     } catch (e: NotExpiredException) {
-                        it.status(204)
+                        it.json(emptyArray<AppointmentDto>()).status(210)
                     }
                 }
 
                 ApiBuilder.get("/getLatest/:courseId") {
                     try {
-                        it.json(appointmentService.getLatest(AppointmentFilterDto(courseId = it.pathParam("courseId").toInt())))
+                        val data = appointmentService.getLatest(AppointmentFilterDto(courseId = it.pathParam("courseId").toInt()))
+                        if (data.outOfSync) {
+                            it.status(211)
+                        }
+                        it.json(data.appointments)
                     } catch (e: NotExpiredException) {
-                        it.status(204)
+                        it.status(210)
                     }
                 }
 

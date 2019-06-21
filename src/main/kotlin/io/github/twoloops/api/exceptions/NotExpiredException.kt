@@ -1,4 +1,4 @@
-package io.github.twoloops.helpers
+package io.github.twoloops.api.exceptions
 
 class NotExpiredException : Exception() {
 }

@@ -19,9 +19,9 @@ data class Appointment(
         var classroom: String = "",
         @DatabaseField(columnName = "lecturer")
         var lecturer: String = "",
-        @DatabaseField(columnName = "start", dataType = DataType.DATE_TIME)
+        @DatabaseField(columnName = "start_time", dataType = DataType.DATE_TIME)
         var start: DateTime = DateTime(),
-        @DatabaseField(columnName = "end", dataType = DataType.DATE_TIME)
+        @DatabaseField(columnName = "end_time", dataType = DataType.DATE_TIME)
         var end: DateTime = DateTime()
 ) {
     companion object {
