@@ -11,8 +11,6 @@ class Utils {
         val databaseFile = File("${System.getProperty("user.home")}/raspored-sync-db/raspored-sync.db")
         val appointmentURL = "http://intranet.fsr.sum.ba:81/intranetfsr/teamworks.dll/internal/calendar.appointmentinfo?OQS=%s&guid=%s&tablename=appointment&hideusers=no"
 
-        const val connectionString = "jdbc:mariadb://localhost:3306/raspored_sync?user=raspored&password=raspored"
-
         const val syncTaskFailingTreshold = 5
         const val syncTaskExecutionTimeMinutes = 30L
         const val failedSyncTaskExecutionTimeMinutes = 5L
@@ -65,6 +63,11 @@ class Utils {
                 "http://intranet.fsr.sum.ba:81/intranetfsr/teamworks.dll/calendar/calendar44/calendar?" to "Elektrotehnika preddiplomski studij 1. godina",
                 "http://intranet.fsr.sum.ba:81/intranetfsr/teamworks.dll/calendar/calendar44/calendar1?" to "Elektrotehnika preddiplomski studij 2. godina",
                 "http://intranet.fsr.sum.ba:81/intranetfsr/teamworks.dll/calendar/calendar44/calendar2?" to "Elektrotehnika preddiplomski studij 3. godina"
+        )
+
+        val elektrotehnikaDiplomskiURLs = hashMapOf(
+                "http://intranet.fsre.sum.ba:81/intranetfsr/teamworks.dll/calendar/calendar46/calendar" to "Elektrotehnika diplomski studij 1. godina AiSU",
+                "http://intranet.fsre.sum.ba:81/intranetfsr/teamworks.dll/calendar/calendar46/calendar2" to "Elektrotehnika diplomski studij 1. godina EE"
         )
     }
 }

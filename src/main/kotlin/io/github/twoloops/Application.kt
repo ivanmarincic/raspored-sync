@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.joda.JodaModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.j256.ormlite.db.MariaDbDatabaseType
+import com.j256.ormlite.db.SqliteDatabaseType
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource
 import com.j256.ormlite.support.ConnectionSource
 import com.j256.ormlite.table.TableUtils
@@ -27,7 +28,7 @@ import org.slf4j.LoggerFactory
 class Application {
 
     companion object {
-        val databaseConnection: ConnectionSource = JdbcPooledConnectionSource(Utils.connectionString, MariaDbDatabaseType())
+        val databaseConnection: ConnectionSource = JdbcPooledConnectionSource("jdbc:sqlite:${Utils.databaseFile.absoluteFile}", SqliteDatabaseType())
         val logger = LoggerFactory.getLogger(Application::class.java)!!
     }
 }
@@ -65,23 +66,27 @@ fun initializeDatabase() {
     val strojarstvo = courseTypeDao.createIfNameNotExists(CourseType(name = Utils.courseTypeStrojarstvo))
     val elektrotehnika = courseTypeDao.createIfNameNotExists(CourseType(name = Utils.courseTypeElektrotehnika))
 
-    Utils.racunarstvoPreddiplomskiURLs.forEach { url, course ->
+    Utils.racunarstvoPreddiplomskiURLs.forEach { (url, course) ->
         courseDao.createIfNameNotExists(Course(name = course, url = url, type = racunarstvo, year = Utils.extractYear(course)))
     }
 
-    Utils.racunarstvoDiplomskiURLs.forEach { url, course ->
+    Utils.racunarstvoDiplomskiURLs.forEach { (url, course) ->
         courseDao.createIfNameNotExists(Course(name = course, url = url, type = racunarstvo, year = Utils.extractYear(course)))
     }
 
-    Utils.strojarstvoPreddiplomskiURLs.forEach { url, course ->
+    Utils.strojarstvoPreddiplomskiURLs.forEach { (url, course) ->
         courseDao.createIfNameNotExists(Course(name = course, url = url, type = strojarstvo, year = Utils.extractYear(course)))
     }
 
-    Utils.strojarstvoDiplomskiURLs.forEach { url, course ->
+    Utils.strojarstvoDiplomskiURLs.forEach { (url, course) ->
         courseDao.createIfNameNotExists(Course(name = course, url = url, type = strojarstvo, year = Utils.extractYear(course)))
     }
 
-    Utils.elektrotehnikaPreddiplomskiURLs.forEach { url, course ->
+    Utils.elektrotehnikaPreddiplomskiURLs.forEach { (url, course) ->
+        courseDao.createIfNameNotExists(Course(name = course, url = url, type = elektrotehnika, year = Utils.extractYear(course)))
+    }
+
+    Utils.elektrotehnikaDiplomskiURLs.forEach { (url, course) ->
         courseDao.createIfNameNotExists(Course(name = course, url = url, type = elektrotehnika, year = Utils.extractYear(course)))
     }
     Application.logger.info("Database initialized")

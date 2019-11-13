@@ -19,6 +19,7 @@ dependencies {
     compile 'com.j256.ormlite:ormlite-core:5.1'
     compile 'com.j256.ormlite:ormlite-jdbc:5.1'
     compile 'org.mariadb.jdbc:mariadb-java-client:2.4.1'
+    compile 'org.xerial:sqlite-jdbc:3.28.0'
     compile 'org.jsoup:jsoup:1.11.3'
     compile 'joda-time:joda-time:2.10'
     compile 'com.jcraft:jsch:0.1.55'
