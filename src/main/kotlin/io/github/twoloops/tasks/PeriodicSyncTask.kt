@@ -16,7 +16,8 @@ import java.util.concurrent.TimeUnit
 
 object PeriodicSyncTask {
 
-    private val scheduledExecutorService = Executors.newScheduledThreadPool(1)!!
+    private val scheduledExecutorService = Executors.newScheduledThreadPool(1)
+    private val executor = Executors.newSingleThreadExecutor()
     private lateinit var scheduledFuture: ScheduledFuture<*>
     private val coursesDao = CourseDaoImpl(Application.databaseConnection)
     private val appointmentDao = AppointmentDaoImpl(Application.databaseConnection)
@@ -25,26 +26,27 @@ object PeriodicSyncTask {
         try {
             Application.logger.info("Syncing courses")
             val courses = coursesDao.queryForAll().map { CourseDto(it) }
-            val executor = Executors.newFixedThreadPool(5)
             val countDownLatch = CountDownLatch(courses.count())
             courses.forEach { course ->
                 executor.submit {
                     var failed = 0
-                    var exception: Exception? = null
-                    while (failed < Utils.syncTaskFailingTreshold) {
+                    while (failed < Utils.syncTaskFailingThreshold) {
                         try {
                             processCourse(course)
                         } catch (e: Exception) {
+                            Thread.sleep(TimeUnit.MINUTES.toMillis(5))
                             failed++
-                            exception = e
                         }
                     }
-                    if (failed >= Utils.syncTaskFailingTreshold) {
+                    if (failed >= Utils.syncTaskFailingThreshold) {
                         if (course.lastFailed == null) {
                             course.lastFailed = DateTime.now()
                         }
                         coursesDao.update(course.toPojo())
-                        Application.logger.error("Course " + course.name + " failed", exception)
+                        Application.logger.error("Course " + course.name + " failed")
+                    } else {
+                        course.lastFailed = null
+                        coursesDao.update(course.toPojo())
                     }
                     countDownLatch.countDown()
                 }

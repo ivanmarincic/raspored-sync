@@ -46,7 +46,7 @@ object HTMLParserService {
         val appointments = ArrayList<AppointmentDto>()
         for (item in list) {
             val itemSplits = item.split(";".toRegex())
-            var guid: String = ""
+            var guid = ""
             if (itemSplits.count() > 0) {
                 guid = itemSplits[0].split("=")[1].split(",")[0].replace("'", "")
             }

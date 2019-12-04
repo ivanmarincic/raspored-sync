@@ -26,7 +26,7 @@ class AppointmentService {
 
     fun getLatest(appointmentFilterDto: AppointmentFilterDto): AppointmentSyncDto {
         val course = courseDao.queryForId(appointmentFilterDto.courseId)
-        val outOfSync = course.lastFailed != null && DateTime.now().withZone(DateTimeZone.UTC) > course.lastFailed!!.withZone(DateTimeZone.UTC).plusHours(4)
+        val outOfSync = course.lastFailed != null && DateTime.now() > course.lastFailed!!.plusDays(1)
         if (appointmentFilterDto.lastSync == null || outOfSync || course.lastSync.withZone(DateTimeZone.UTC) > appointmentFilterDto.lastSync!!.withZone(DateTimeZone.UTC)) {
             val start = DateTime().withDayOfWeek(DateTimeConstants.MONDAY).withTimeAtStartOfDay()
             val end = start.plusDays(DateTimeConstants.DAYS_PER_WEEK * 2)
